@@ -3,6 +3,72 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { GoogleIcon, AppleIcon } from "../../components/icons";
+import { useSignIn } from "@clerk/nextjs";
+import { useState } from "react";
+
+function GoogleSignInButton() {
+  const { isLoaded, signIn } = useSignIn();
+  const [error, setError] = useState<string>("");
+
+  const handleGoogleSignIn = async () => {
+    if (!isLoaded) return;
+    
+    try {
+      await signIn.authenticateWithRedirect({
+        strategy: "oauth_google",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/dashboard",
+      });
+    } catch (err) {
+      setError("Failed to sign in with Google");
+    }
+  };
+
+  return (
+    <motion.button
+      onClick={handleGoogleSignIn}
+      disabled={!isLoaded}
+      className="w-full bg-gray-800/50 hover:bg-gray-700/70 border border-white/30 text-white py-3 px-4 text-sm tracking-wider transition-colors duration-300 rounded-lg flex items-center justify-center space-x-3"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <GoogleIcon className="w-5 h-5" />
+      <span>CONTINUE WITH GOOGLE</span>
+    </motion.button>
+  );
+}
+
+function AppleSignInButton() {
+  const { isLoaded, signIn } = useSignIn();
+  const [error, setError] = useState<string>("");
+
+  const handleAppleSignIn = async () => {
+    if (!isLoaded) return;
+    
+    try {
+      await signIn.authenticateWithRedirect({
+        strategy: "oauth_apple",
+        redirectUrl: "/sso-callback",
+        redirectUrlComplete: "/dashboard",
+      });
+    } catch (err) {
+      setError("Failed to sign in with Apple");
+    }
+  };
+
+  return (
+    <motion.button
+      onClick={handleAppleSignIn}
+      disabled={!isLoaded}
+      className="w-full bg-gray-800/50 hover:bg-gray-700/70 border border-white/30 text-white py-3 px-4 text-sm tracking-wider transition-colors duration-300 rounded-lg flex items-center justify-center space-x-3"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <AppleIcon className="w-5 h-5" />
+      <span>CONTINUE WITH APPLE</span>
+    </motion.button>
+  );
+}
 
 export default function LoginPage() {
   return (
@@ -148,22 +214,8 @@ export default function LoginPage() {
               transition={{ duration: 1, delay: 1 }}
               className="space-y-3"
             >
-              <motion.button
-                className="w-full bg-gray-800/50 hover:bg-gray-700/70 border border-white/30 text-white py-3 px-4 text-sm tracking-wider transition-colors duration-300 rounded-lg flex items-center justify-center space-x-3"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <GoogleIcon className="w-5 h-5" />
-                <span>CONTINUE WITH GOOGLE</span>
-              </motion.button>
-              <motion.button
-                className="w-full bg-gray-800/50 hover:bg-gray-700/70 border border-white/30 text-white py-3 px-4 text-sm tracking-wider transition-colors duration-300 rounded-lg flex items-center justify-center space-x-3"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <AppleIcon className="w-5 h-5" />
-                <span>CONTINUE WITH APPLE</span>
-              </motion.button>
+              <GoogleSignInButton />
+              <AppleSignInButton />
             </motion.div>
 
             {/* Footer */}

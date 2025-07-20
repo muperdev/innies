@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Navigation from "../components/navigation";
+import { ShieldCheck, Users, Trophy } from "../components/icons";
 
 export default function Home() {
   return (
@@ -256,101 +257,107 @@ export default function Home() {
             community where knowledge and reliability matter.
           </motion.p>
 
-          {/* Large Image Grid - Trust Showcase */}
+          {/* Trust Cards - Icon Based */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
             {[
               {
                 title: "VERIFIED EXPERTS",
                 desc: "Background-checked professionals with proven track records",
-                image: "/trust-verified.jpg",
+                icon: ShieldCheck,
                 stats: "500+ Certified",
                 delay: 0,
               },
               {
                 title: "COMMUNITY RATINGS",
                 desc: "Real reviews from real people who got real help",
-                image: "/trust-community.jpg",
+                icon: Users,
                 stats: "4.9/5 Rating",
                 delay: 0.2,
               },
               {
                 title: "SUCCESS STORIES",
                 desc: "Thousands of problems solved daily",
-                image: "/trust-success.jpg",
+                icon: Trophy,
                 stats: "2M+ Solved",
                 delay: 0.4,
               },
-            ].map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.5 + item.delay }}
-                viewport={{ once: true }}
-                className="group"
-              >
+            ].map((item, index) => {
+              const IconComponent = item.icon;
+              return (
                 <motion.div
-                  className="relative h-80 w-full mb-6 border-2 border-white hover:border-orange-400 transition-colors duration-300 rounded-lg overflow-hidden cursor-pointer"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.5 + item.delay }}
+                  viewport={{ once: true }}
+                  className="group"
                 >
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover filter brightness-75 contrast-125 group-hover:brightness-90 transition-all duration-300"
-                  />
-                  
-                  {/* Dark overlay for text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  
-                  {/* Orange accent overlay on hover */}
                   <motion.div
-                    className="absolute inset-0 bg-orange-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  />
-                  
-                  {/* Content overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+                    className="relative h-80 w-full mb-6 border-2 border-white/30 hover:border-orange-400 transition-colors duration-300 rounded-lg cursor-pointer bg-gray-900/50 flex flex-col items-center justify-center p-8"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    {/* Icon */}
                     <motion.div
-                      className="text-4xl font-black text-orange-400 mb-2"
+                      className="mb-6"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      whileInView={{ scale: 1, opacity: 1 }}
+                      transition={{ delay: 0.6 + item.delay, duration: 0.5 }}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                    >
+                      <IconComponent className="w-16 h-16 text-orange-400 group-hover:text-white transition-colors duration-300" />
+                    </motion.div>
+
+                    {/* Stats */}
+                    <motion.div
+                      className="text-4xl font-black text-orange-400 mb-4 group-hover:text-white transition-colors duration-300"
                       initial={{ y: 10, opacity: 0 }}
                       whileInView={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.7 + item.delay }}
                     >
                       {item.stats}
                     </motion.div>
-                    <h3 className="text-xl font-bold tracking-wider mb-2 group-hover:text-orange-200 transition-colors">
+
+                    {/* Title */}
+                    <h3 className="text-xl font-bold tracking-wider mb-4 group-hover:text-orange-200 transition-colors text-center">
                       {item.title}
                     </h3>
-                    <div className="w-16 h-px bg-white/50 mb-3" />
-                  </div>
+
+                    {/* Divider */}
+                    <div className="w-16 h-px bg-white/50 mb-4 group-hover:bg-orange-400 transition-colors duration-300" />
+                    
+                    {/* Corner accent */}
+                    <motion.div
+                      className="absolute top-4 right-4 w-3 h-3 bg-white group-hover:bg-orange-400 transition-colors duration-300"
+                      animate={{ 
+                        scale: [1, 1.2, 1],
+                        opacity: [0.7, 1, 0.7]
+                      }}
+                      transition={{ 
+                        duration: 3, 
+                        repeat: Infinity, 
+                        delay: item.delay * 0.8 
+                      }}
+                    />
+
+                    {/* Animated background accent */}
+                    <motion.div
+                      className="absolute inset-0 bg-orange-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"
+                    />
+                  </motion.div>
                   
-                  {/* Corner accent */}
-                  <motion.div
-                    className="absolute top-4 right-4 w-3 h-3 bg-white group-hover:bg-orange-400 transition-colors duration-300"
-                    animate={{ 
-                      scale: [1, 1.2, 1],
-                      opacity: [0.7, 1, 0.7]
-                    }}
-                    transition={{ 
-                      duration: 3, 
-                      repeat: Infinity, 
-                      delay: index * 0.8 
-                    }}
-                  />
+                  {/* Description below card */}
+                  <motion.p
+                    className="text-white/70 text-center leading-relaxed group-hover:text-white/90 transition-colors duration-300"
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 + item.delay }}
+                  >
+                    {item.desc}
+                  </motion.p>
                 </motion.div>
-                
-                {/* Description below image */}
-                <motion.p
-                  className="text-white/70 text-center leading-relaxed group-hover:text-white/90 transition-colors duration-300"
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 + item.delay }}
-                >
-                  {item.desc}
-                </motion.p>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="flex flex-wrap justify-center gap-8">

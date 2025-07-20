@@ -6,13 +6,13 @@ export default defineSchema({
   users: defineTable({
     name: v.string(),
     email: v.string(),
-    password: v.string(), // Added password field for authentication
+    clerkId: v.string(), // Clerk user ID
     userType: v.optional(v.string()), // Added user type (seeker/expert)
     imageUrl: v.optional(v.string()),
     skills: v.optional(v.array(v.string())),
     bio: v.optional(v.string()),
     createdAt: v.number(), // Timestamp
-  }).index("by_email", ["email"]),
+  }).index("by_email", ["email"]).index("by_clerk_id", ["clerkId"]),
 
   // Chats table to store chat sessions between users
   chats: defineTable({
