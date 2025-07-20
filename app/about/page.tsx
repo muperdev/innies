@@ -92,7 +92,7 @@ export default function AboutPage() {
                   waiting days for help when you need it most.
                 </p>
                 <p className="text-lg text-white/70 leading-relaxed max-w-lg">
-                  Whether it's a midnight emergency or weekend learning session, 
+                  Whether it&apos;s a midnight emergency or weekend learning session, 
                   our global network of experts is ready to solve your problems 
                   through video calls, real-time guidance, and personalized support.
                 </p>
@@ -327,8 +327,8 @@ export default function AboutPage() {
             className="text-white/70 text-xl leading-relaxed max-w-4xl mx-auto mb-16"
           >
             Our team combines decades of technology experience with deep 
-            understanding of human connection. We're not just building a platform—
-            we're creating a new way for people to help each other.
+            understanding of human connection. We&apos;re not just building a platform—
+            we&apos;re creating a new way for people to help each other.
           </motion.p>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
