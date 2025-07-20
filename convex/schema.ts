@@ -33,4 +33,18 @@ export default defineSchema({
     isRead: v.boolean(),
     attachments: v.optional(v.array(v.string())), // URLs to any attachments
   }),
+
+  // Contact submissions table to store contact form submissions
+  contactSubmissions: defineTable({
+    firstName: v.string(),
+    lastName: v.string(),
+    email: v.string(),
+    inquiryType: v.string(),
+    message: v.string(),
+    status: v.string(), // "new", "in_progress", "resolved"
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_email", ["email"])
+    .index("by_status", ["status"])
+    .index("by_created_at", ["createdAt"]),
 });

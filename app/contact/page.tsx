@@ -1,9 +1,87 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import Navigation from "../../components/navigation";
 
+type FormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  inquiryType: string;
+  message: string;
+};
+
+type FormState = {
+  isSubmitting: boolean;
+  isSubmitted: boolean;
+  error: string | null;
+};
+
 export default function ContactPage() {
+  const [formData, setFormData] = useState<FormData>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    inquiryType: "",
+    message: "",
+  });
+
+  const [formState, setFormState] = useState<FormState>({
+    isSubmitting: false,
+    isSubmitted: false,
+    error: null,
+  });
+
+  const createContactSubmission = useMutation(api.functions.contact.createContactSubmission);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (formState.error) {
+      setFormState(prev => ({ ...prev, error: null }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    setFormState(prev => ({ ...prev, isSubmitting: true, error: null }));
+
+    try {
+      await createContactSubmission({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        inquiryType: formData.inquiryType,
+        message: formData.message,
+      });
+
+      setFormState({
+        isSubmitting: false,
+        isSubmitted: true,
+        error: null,
+      });
+
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        inquiryType: "",
+        message: "",
+      });
+    } catch (error) {
+      setFormState({
+        isSubmitting: false,
+        isSubmitted: false,
+        error: error instanceof Error ? error.message : "An unexpected error occurred. Please try again.",
+      });
+    }
+  };
   return (
     <main className="bg-black text-white min-h-screen font-mono relative overflow-hidden">
       <Navigation />
@@ -87,7 +165,7 @@ export default function ContactPage() {
                 <div className="h-px w-24 bg-gradient-to-r from-white to-orange-400 mb-6" />
                 <p className="text-lg text-white/70 leading-relaxed max-w-lg mb-6">
                   Have questions about our platform? Need expert help? Want to 
-                  join our network? We're here to help and would love to hear from you.
+                  join our network? We&apos;re here to help and would love to hear from you.
                 </p>
               </motion.div>
 
@@ -173,9 +251,51 @@ export default function ContactPage() {
                   </h2>
                   <div className="w-16 h-px bg-gradient-to-r from-white to-orange-400 mx-auto mb-4" />
                   <p className="text-white/70 text-sm tracking-wide">
-                    WE'LL RESPOND WITHIN 24 HOURS
+                    WE&apos;LL RESPOND WITHIN 24 HOURS
                   </p>
                 </motion.div>
+
+                {/* Success Message */}
+                {formState.isSubmitted && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-green-900/50 border border-green-400/50 p-6 rounded-lg mb-6"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">✅</span>
+                      <div>
+                        <h3 className="text-lg font-bold text-green-400 tracking-wider">
+                          MESSAGE SENT SUCCESSFULLY
+                        </h3>
+                        <p className="text-green-300/80 text-sm mt-1">
+                          Thank you for contacting us. We&apos;ll respond within 24 hours.
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Error Message */}
+                {formState.error && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-red-900/50 border border-red-400/50 p-6 rounded-lg mb-6"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">❌</span>
+                      <div>
+                        <h3 className="text-lg font-bold text-red-400 tracking-wider">
+                          ERROR
+                        </h3>
+                        <p className="text-red-300/80 text-sm mt-1">
+                          {formState.error}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
 
                 {/* Contact Form */}
                 <motion.form
@@ -183,6 +303,7 @@ export default function ContactPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1, delay: 1.1 }}
                   className="space-y-6"
+                  onSubmit={handleSubmit}
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -191,9 +312,14 @@ export default function ContactPage() {
                       </label>
                       <motion.input
                         type="text"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleInputChange}
+                        required
                         className="w-full bg-black border-2 border-white/30 text-white px-4 py-3 text-sm tracking-wider focus:border-orange-400 focus:outline-none transition-colors duration-300 rounded-lg"
                         placeholder="John"
                         whileFocus={{ scale: 1.02 }}
+                        disabled={formState.isSubmitting}
                       />
                     </div>
                     <div>
@@ -202,9 +328,14 @@ export default function ContactPage() {
                       </label>
                       <motion.input
                         type="text"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleInputChange}
+                        required
                         className="w-full bg-black border-2 border-white/30 text-white px-4 py-3 text-sm tracking-wider focus:border-orange-400 focus:outline-none transition-colors duration-300 rounded-lg"
                         placeholder="Doe"
                         whileFocus={{ scale: 1.02 }}
+                        disabled={formState.isSubmitting}
                       />
                     </div>
                   </div>
@@ -215,9 +346,14 @@ export default function ContactPage() {
                     </label>
                     <motion.input
                       type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
                       className="w-full bg-black border-2 border-white/30 text-white px-4 py-3 text-sm tracking-wider focus:border-orange-400 focus:outline-none transition-colors duration-300 rounded-lg"
                       placeholder="john.doe@example.com"
                       whileFocus={{ scale: 1.02 }}
+                      disabled={formState.isSubmitting}
                     />
                   </div>
 
@@ -226,8 +362,13 @@ export default function ContactPage() {
                       INQUIRY TYPE
                     </label>
                     <motion.select
+                      name="inquiryType"
+                      value={formData.inquiryType}
+                      onChange={handleInputChange}
+                      required
                       className="w-full bg-black border-2 border-white/30 text-white px-4 py-3 text-sm tracking-wider focus:border-orange-400 focus:outline-none transition-colors duration-300 rounded-lg"
                       whileFocus={{ scale: 1.02 }}
+                      disabled={formState.isSubmitting}
                     >
                       <option value="">SELECT CATEGORY</option>
                       <option value="general">GENERAL INQUIRY</option>
@@ -243,25 +384,54 @@ export default function ContactPage() {
                       MESSAGE
                     </label>
                     <motion.textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      required
                       rows={6}
+                      maxLength={2000}
                       className="w-full bg-black border-2 border-white/30 text-white px-4 py-3 text-sm tracking-wider focus:border-orange-400 focus:outline-none transition-colors duration-300 rounded-lg resize-none"
                       placeholder="Tell us how we can help you..."
                       whileFocus={{ scale: 1.02 }}
+                      disabled={formState.isSubmitting}
                     />
+                    <div className="text-right text-white/40 text-xs mt-1">
+                      {formData.message.length}/2000 characters
+                    </div>
                   </div>
 
                   <motion.button
                     type="submit"
-                    className="w-full bg-white hover:bg-orange-500 text-black font-bold py-4 px-4 text-sm tracking-wider transition-colors duration-300 rounded-lg relative overflow-hidden"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    disabled={formState.isSubmitting}
+                    className={`w-full font-bold py-4 px-4 text-sm tracking-wider transition-colors duration-300 rounded-lg relative overflow-hidden ${
+                      formState.isSubmitting
+                        ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-orange-500 text-black"
+                    }`}
+                    whileHover={formState.isSubmitting ? {} : { scale: 1.02 }}
+                    whileTap={formState.isSubmitting ? {} : { scale: 0.98 }}
                   >
-                    <span className="relative z-10">SEND MESSAGE</span>
-                    <motion.div
-                      className="absolute bottom-0 left-0 w-full h-px bg-black/20"
-                      animate={{ scaleX: [0, 1, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
+                    <span className="relative z-10 flex items-center justify-center">
+                      {formState.isSubmitting ? (
+                        <>
+                          <motion.div
+                            className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full mr-2"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          />
+                          SENDING...
+                        </>
+                      ) : (
+                        "SEND MESSAGE"
+                      )}
+                    </span>
+                    {!formState.isSubmitting && (
+                      <motion.div
+                        className="absolute bottom-0 left-0 w-full h-px bg-black/20"
+                        animate={{ scaleX: [0, 1, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                    )}
                   </motion.button>
                 </motion.form>
 
@@ -327,7 +497,7 @@ export default function ContactPage() {
               },
               {
                 question: "CAN I BECOME AN EXPERT ON THE PLATFORM?",
-                answer: "Yes! We're always looking for qualified professionals. The application process includes skill assessment, background verification, and quality review. Apply through our partnership program.",
+                answer: "Yes! We&apos;re always looking for qualified professionals. The application process includes skill assessment, background verification, and quality review. Apply through our partnership program.",
               },
               {
                 question: "IS MY PERSONAL INFORMATION SECURE?",
@@ -378,7 +548,7 @@ export default function ContactPage() {
             transition={{ duration: 1.2, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            WHEN WE'RE HERE
+            WHEN WE&apos;RE HERE
             <motion.div
               className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-white to-orange-400"
               initial={{ scaleX: 0 }}
