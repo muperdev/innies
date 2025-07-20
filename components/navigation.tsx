@@ -73,6 +73,24 @@ export default function Navigation() {
                 className="absolute bottom-0 left-0 w-full h-px bg-orange-400 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
               />
             </Link>
+            <Link
+              href="/about"
+              className="text-white/70 hover:text-white text-sm tracking-wider transition-colors duration-300 relative group"
+            >
+              ABOUT
+              <motion.div
+                className="absolute bottom-0 left-0 w-full h-px bg-orange-400 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
+              />
+            </Link>
+            <Link
+              href="/contact"
+              className="text-white/70 hover:text-white text-sm tracking-wider transition-colors duration-300 relative group"
+            >
+              CONTACT
+              <motion.div
+                className="absolute bottom-0 left-0 w-full h-px bg-orange-400 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
+              />
+            </Link>
           </motion.div>
 
           {/* Auth Buttons */}
