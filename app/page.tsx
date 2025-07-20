@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import Navigation from "../components/navigation";
 
 export default function Home() {
   return (
     <main className="bg-black text-white min-h-screen font-mono relative overflow-hidden">
+      <Navigation />
       {/* Geometric Background */}
       <div className="absolute inset-0 z-0">
         <motion.div
@@ -34,7 +36,7 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-10 w-full min-h-screen flex items-center justify-center px-4">
+      <section className="relative z-10 w-full min-h-screen flex items-center justify-center px-4 pt-16">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -146,7 +148,7 @@ export default function Home() {
       </section>
 
       {/* Feature Grid Section */}
-      <section className="relative z-10 w-full py-32 px-4">
+      <section id="features" className="relative z-10 w-full py-32 px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -471,7 +473,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="relative z-10 w-full py-32 px-4 border-t border-white/20">
+      <section id="how-it-works" className="relative z-10 w-full py-32 px-4 border-t border-white/20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -596,7 +598,7 @@ export default function Home() {
       </section>
 
       {/* Expert Spotlight Section */}
-      <section className="relative z-10 w-full py-32 px-4 border-t border-white/20">
+      <section id="experts" className="relative z-10 w-full py-32 px-4 border-t border-white/20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
