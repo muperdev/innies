@@ -10,7 +10,7 @@ export default defineSchema({
     skills: v.optional(v.array(v.string())),
     bio: v.optional(v.string()),
     createdAt: v.number(), // Timestamp
-  }),
+  }).index("by_email", ["email"]),
 
   // Chats table to store chat sessions between users
   chats: defineTable({
