@@ -6,6 +6,8 @@ export default defineSchema({
   users: defineTable({
     name: v.string(),
     email: v.string(),
+    password: v.string(), // Added password field for authentication
+    userType: v.optional(v.string()), // Added user type (seeker/expert)
     imageUrl: v.optional(v.string()),
     skills: v.optional(v.array(v.string())),
     bio: v.optional(v.string()),
