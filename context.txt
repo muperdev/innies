@@ -1,0 +1,38 @@
+🧾 Project Task Overview (Prepared by Rohan)
+We’re working on a Real-Time Skill Exchange Network — think of it like Uber for knowledge — where users can instantly connect with skilled individuals via video call to solve real-time problems or learn something quickly.
+
+✅ What We’re Doing Now
+I’ve successfully cloned and set up the project locally. The codebase is clean, and we’re using Next.js with Convex as the backend/database. The goal is to keep everything real-time and scalable, while ensuring the developer experience remains smooth.
+
+Currently, we’re focusing on the core messaging/chat functionality — which is a key piece of the platform.
+
+🔧 My Responsibilities
+I’ve taken charge of the following parts:
+
+Convex Database Schema
+
+Setting up tables like users, chats, messages, etc.
+
+Making sure relationships are well structured and scalable.
+
+Backend Functions with Convex
+
+Writing core logic (queries/mutations) for:
+
+Sending messages
+
+Creating new chats
+
+Fetching chat history
+
+Chat App View & Functionality
+
+Building the chat UI in Next.js
+
+Connecting it to Convex backend
+
+Ensuring real-time updates using Convex hooks (useQuery, useMutation)
+
+Documentation
+
+I’m documenting every part of what I do — including schema, file structure, backend logic, and how things connect — so that it's easy for everyone to understand and collaborate.
