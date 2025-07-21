@@ -25,6 +25,31 @@ export const getCurrentUser = query({
   },
 });
 
+// Query to get all skill providers
+export const getProviders = query({
+  args: {
+    skillCategory: v.optional(v.string()),
+    isAvailable: v.optional(v.boolean()),
+    location: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    let query = ctx.db.query("users")
+      .withIndex("by_user_type", (q) => q.eq("userType", "provider"));
+    
+    const providers = await query.collect();
+    
+    return providers.filter(provider => {
+      if (args.isAvailable !== undefined && provider.isAvailable !== args.isAvailable) {
+        return false;
+      }
+      if (args.location && provider.location !== args.location) {
+        return false;
+      }
+      return true;
+    });
+  },
+});
+
 // Query to get all users
 export const getAllUsers = query({
   args: {},
@@ -52,8 +77,7 @@ export const createOrUpdateUser = mutation({
     name: v.string(),
     email: v.string(),
     imageUrl: v.optional(v.string()),
-    userType: v.optional(v.string()),
-    skills: v.optional(v.array(v.string())),
+    userType: v.optional(v.union(v.literal("seeker"), v.literal("provider"))),
     bio: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -70,7 +94,6 @@ export const createOrUpdateUser = mutation({
         email: args.email,
         imageUrl: args.imageUrl,
         userType: args.userType || existingUser.userType,
-        skills: args.skills || existingUser.skills,
         bio: args.bio || existingUser.bio,
       });
       return existingUser._id;
@@ -83,7 +106,6 @@ export const createOrUpdateUser = mutation({
       email: args.email,
       imageUrl: args.imageUrl,
       userType: args.userType || "seeker",
-      skills: args.skills || [],
       bio: args.bio || "",
       createdAt: Date.now(),
     });
@@ -94,9 +116,17 @@ export const createOrUpdateUser = mutation({
 // Mutation to update user profile
 export const updateUserProfile = mutation({
   args: {
-    userType: v.optional(v.string()),
-    skills: v.optional(v.array(v.string())),
+    userType: v.optional(v.union(v.literal("seeker"), v.literal("provider"))),
     bio: v.optional(v.string()),
+    hourlyRate: v.optional(v.number()),
+    availability: v.optional(v.array(v.object({
+      dayOfWeek: v.number(),
+      startTime: v.string(),
+      endTime: v.string(),
+    }))),
+    portfolioUrls: v.optional(v.array(v.string())),
+    location: v.optional(v.string()),
+    isAvailable: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -109,11 +139,21 @@ export const updateUserProfile = mutation({
     
     if (!user) throw new Error("User not found");
     
-    await ctx.db.patch(user._id, {
+    const updateData: any = {
       userType: args.userType || user.userType,
-      skills: args.skills || user.skills,
       bio: args.bio || user.bio,
-    });
+    };
+    
+    // Only update provider-specific fields if user is a provider
+    if (args.userType === "provider" || user.userType === "provider") {
+      if (args.hourlyRate !== undefined) updateData.hourlyRate = args.hourlyRate;
+      if (args.availability !== undefined) updateData.availability = args.availability;
+      if (args.portfolioUrls !== undefined) updateData.portfolioUrls = args.portfolioUrls;
+      if (args.location !== undefined) updateData.location = args.location;
+      if (args.isAvailable !== undefined) updateData.isAvailable = args.isAvailable;
+    }
+    
+    await ctx.db.patch(user._id, updateData);
     
     return user._id;
   },
