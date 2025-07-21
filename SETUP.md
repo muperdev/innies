@@ -1,8 +1,8 @@
-# Contact Form Setup Instructions
+# Setup Instructions
 
 ## Convex Setup
 
-The contact form uses Convex as the backend for storing contact submissions. Follow these steps to set up Convex:
+The application uses Convex as the backend for storing data. Follow these steps to set up Convex:
 
 ### 1. Install Convex CLI
 ```bash
@@ -33,7 +33,41 @@ Run the following to deploy:
 npx convex deploy
 ```
 
+## Clerk Authentication Setup
+
+### 1. Create a Clerk Account
+Sign up at [clerk.com](https://clerk.com) and create a new application.
+
+### 2. Configure Environment Variables
+Add the following to your `.env.local` file:
+```bash
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key
+CLERK_SECRET_KEY=your_secret_key
+```
+
+### 3. Set Up Webhook
+1. In your Clerk Dashboard, navigate to Webhooks
+2. Create a new webhook with the endpoint: `https://your-domain.com/api/webhooks/clerk`
+3. Select the following events:
+   - `user.created`
+   - `user.updated`
+4. Copy the webhook secret and add it to your `.env.local` file:
+```bash
+CLERK_WEBHOOK_SECRET=your_webhook_secret
+```
+
+### 4. Install Required Packages
+```bash
+npm install svix
+```
+
 ## Features
+
+### ✅ Authentication
+- User signup and login with email/password
+- OAuth providers (Google, Apple)
+- User data synced to Convex database
+- Protected routes and pages
 
 ### ✅ Form Validation
 - Required field validation
