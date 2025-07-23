@@ -5,11 +5,12 @@ import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import DashboardLayout from "@/components/dashboard-layout";
-import { 
-  Calendar, 
-  DollarSign, 
-  Star, 
-  Users, 
+import VideoCallDemo from "@/components/chat/video-call-demo";
+import {
+  Calendar,
+  DollarSign,
+  Star,
+  Users,
   TrendingUp,
   Clock,
   CheckCircle,
@@ -192,7 +193,7 @@ export default function DashboardPage() {
             <h2 className="text-xl font-black tracking-widest text-white mb-6">
               PROFILE OVERVIEW
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <h3 className="text-white/80 text-sm font-bold tracking-wider uppercase">
@@ -267,7 +268,7 @@ export default function DashboardPage() {
             <h2 className="text-xl font-black tracking-widest text-white mb-6">
               RECENT ACTIVITY
             </h2>
-            
+
             <div className="space-y-4">
               {recentActivity.map((activity, index) => (
                 <motion.div
@@ -279,9 +280,9 @@ export default function DashboardPage() {
                 >
                   <div className={`
                     w-2 h-2 rounded-full mt-2 flex-shrink-0
-                    ${activity.status === 'completed' ? 'bg-green-400' : 
-                      activity.status === 'success' ? 'bg-orange-400' : 
-                      activity.status === 'positive' ? 'bg-yellow-400' : 'bg-blue-400'}
+                    ${activity.status === 'completed' ? 'bg-green-400' :
+                      activity.status === 'success' ? 'bg-orange-400' :
+                        activity.status === 'positive' ? 'bg-yellow-400' : 'bg-blue-400'}
                   `} />
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm font-bold tracking-wide truncate">
@@ -308,17 +309,29 @@ export default function DashboardPage() {
           </motion.div>
         </div>
 
-        {/* Quick Actions */}
+        {/* Video Call Demo */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <VideoCallDemo
+            userIdentity={user?.id || "demo-user"}
+            userName={user?.firstName || "Demo User"}
+          />
+        </motion.div>
+
+        {/* Quick Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
           className="bg-gray-900/50 border border-white/30 p-6 rounded-lg"
         >
           <h2 className="text-xl font-black tracking-widest text-white mb-6">
             QUICK ACTIONS
           </h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <motion.button
               whileHover={{ scale: 1.02 }}

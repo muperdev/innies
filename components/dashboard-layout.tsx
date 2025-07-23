@@ -11,7 +11,8 @@ import {
   User, 
   Settings,
   LogOut,
-  Home
+  Home,
+  MessageCircle
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -24,6 +25,11 @@ const sidebarLinks = [
     href: "/dashboard/hire",
     label: "Hire an Expert",
     icon: Search,
+  },
+  {
+    href: "/dashboard/chat",
+    label: "Messages",
+    icon: MessageCircle,
   },
   {
     href: "/dashboard/recent",

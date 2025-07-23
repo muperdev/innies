@@ -70,6 +70,17 @@ export const getUserByEmail = query({
   },
 });
 
+// Query to get a user by Clerk ID
+export const getUserByClerkId = query({
+  args: { clerkId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+      .unique();
+  },
+});
+
 // Mutation to create or update user from Clerk webhook
 export const createOrUpdateUser = mutation({
   args: {
