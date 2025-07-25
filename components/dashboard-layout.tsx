@@ -4,15 +4,15 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser, SignOutButton } from "@clerk/nextjs";
-import { 
-  Search, 
-  Users, 
-  CreditCard, 
-  User, 
+import {
+  Search,
+  Users,
+  CreditCard,
+  User,
   Settings,
   LogOut,
   Home,
-  MessageCircle
+  MessageCircle,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -124,7 +124,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           className="w-80 bg-gray-900/50 border-r border-white/30 backdrop-blur-sm flex flex-col"
         >
           {/* Logo/Brand */}
-          <div className="p-6 border-b border-white/20">
+          <Link href={"/"} className="p-6 border-b border-white/20">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -145,11 +145,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   }}
                 />
               </div>
-              <h1 className="text-2xl font-black tracking-widest">
-                INNIES
-              </h1>
+              <h1 className="text-2xl font-black tracking-widest">INNIES</h1>
             </motion.div>
-          </div>
+          </Link>
 
           {/* User Profile Section */}
           <div className="p-6 border-b border-white/20">
@@ -188,7 +186,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               {sidebarLinks.map((link, index) => {
                 const isActive = pathname === link.href;
                 const Icon = link.icon;
-                
+
                 return (
                   <motion.div
                     key={link.href}
@@ -201,23 +199,26 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                       className={`
                         flex items-center space-x-3 px-4 py-3 rounded-lg 
                         transition-all duration-200 group
-                        ${isActive 
-                          ? 'bg-orange-400/20 border border-orange-400/50 text-orange-400' 
-                          : 'hover:bg-white/10 border border-transparent hover:border-white/30'
+                        ${
+                          isActive
+                            ? "bg-orange-400/20 border border-orange-400/50 text-orange-400"
+                            : "hover:bg-white/10 border border-transparent hover:border-white/30"
                         }
                       `}
                     >
-                      <Icon 
-                        size={20} 
+                      <Icon
+                        size={20}
                         className={`
                           transition-colors duration-200
-                          ${isActive ? 'text-orange-400' : 'text-white/70 group-hover:text-white'}
+                          ${isActive ? "text-orange-400" : "text-white/70 group-hover:text-white"}
                         `}
                       />
-                      <span className={`
+                      <span
+                        className={`
                         text-sm font-bold tracking-wider
-                        ${isActive ? 'text-orange-400' : 'text-white/80 group-hover:text-white'}
-                      `}>
+                        ${isActive ? "text-orange-400" : "text-white/80 group-hover:text-white"}
+                      `}
+                      >
                         {link.label}
                       </span>
                     </Link>

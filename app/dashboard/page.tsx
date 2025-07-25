@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useSyncUser } from "@/hooks/use-sync-user";
 import DashboardLayout from "@/components/dashboard-layout";
 import VideoCallDemo from "@/components/chat/video-call-demo";
 import {
@@ -18,37 +17,8 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
-  const { user, isLoaded } = useUser();
-  const currentUser = useQuery(api.functions.users.getCurrentUser);
-
-  if (!isLoaded) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-full">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-8 h-8 border-2 border-orange-400 border-t-transparent rounded-full"
-          />
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (!user) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-            <p className="text-white/80 font-bold tracking-wider">
-              Please sign in to access the dashboard.
-            </p>
-          </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
+  const { user } = useUser();
+  const { user: currentUser } = useSyncUser();
 
   // Sample data - replace with actual queries when backend is ready
   const stats = [

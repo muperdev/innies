@@ -6,6 +6,7 @@ import Link from "next/link";
 import { GoogleIcon, AppleIcon } from "../../components/icons";
 import { useSignUp } from "@clerk/nextjs";
 import { useState, FormEvent } from "react";
+import AuthGuard from "@/components/auth-guard";
 
 function GoogleSignUpButton() {
   const { isLoaded, signUp } = useSignUp();
@@ -140,7 +141,8 @@ export default function SignupPage() {
     }
   };
   return (
-    <main className="bg-black text-white min-h-screen font-mono relative overflow-hidden">
+    <AuthGuard>
+      <main className="bg-black text-white min-h-screen font-mono relative overflow-hidden">
       {/* Geometric Background */}
       <div className="absolute inset-0 z-0">
         <motion.div
@@ -427,5 +429,6 @@ export default function SignupPage() {
         </motion.div>
       </section>
     </main>
+    </AuthGuard>
   );
 }

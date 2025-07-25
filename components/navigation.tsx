@@ -2,8 +2,25 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useUser, SignOutButton } from "@clerk/nextjs";
+import { User, LogOut } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Navigation() {
+  const { user, isLoaded } = useUser();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   return (
     <motion.nav
       initial={{ opacity: 0, y: -20 }}
@@ -93,40 +110,122 @@ export default function Navigation() {
             </Link>
           </motion.div>
 
-          {/* Auth Buttons */}
+          {/* Auth Section */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 1.1 }}
             className="flex items-center space-x-4"
           >
-            <Link href="/login">
-              <motion.button
-                className="text-white/80 hover:text-white text-sm tracking-wider transition-colors duration-300 relative group"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                LOGIN
-                <motion.div
-                  className="absolute bottom-0 left-0 w-full h-px bg-white/50 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
-                />
-              </motion.button>
-            </Link>
-            
-            <Link href="/signup">
-              <motion.button
-                className="bg-white hover:bg-orange-500 text-black font-bold py-2 px-6 text-sm tracking-wider transition-colors duration-300 rounded-lg relative overflow-hidden"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span className="relative z-10">SIGN UP</span>
-                <motion.div
-                  className="absolute bottom-0 left-0 w-full h-px bg-black/20"
-                  animate={{ scaleX: [0, 1, 0] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                />
-              </motion.button>
-            </Link>
+            {!isLoaded ? (
+              <div className="w-8 h-8 border-2 border-orange-400/50 border-t-transparent rounded-full animate-spin" />
+            ) : user ? (
+              <div className="relative" ref={menuRef}>
+                <motion.button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {user.imageUrl ? (
+                    <img
+                      src={user.imageUrl}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full border-2 border-orange-400/30"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 bg-orange-400/20 rounded-full flex items-center justify-center border-2 border-orange-400/30">
+                      <User className="w-4 h-4 text-orange-400" />
+                    </div>
+                  )}
+                  <span className="text-sm tracking-wider hidden md:block">
+                    {user.firstName || "USER"}
+                  </span>
+                </motion.button>
+
+                {/* User Dropdown Menu */}
+                {isUserMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute right-0 top-full mt-2 w-48 bg-gray-900/95 border border-white/30 rounded-lg shadow-xl z-50"
+                  >
+                    <div className="p-4 border-b border-white/10">
+                      <p className="text-white font-bold tracking-wider text-sm">
+                        {user.fullName || `${user.firstName} ${user.lastName}`}
+                      </p>
+                      <p className="text-white/60 text-xs tracking-wide">
+                        {user.primaryEmailAddress?.emailAddress}
+                      </p>
+                    </div>
+                    
+                    <div className="p-2">
+                      <Link
+                        href="/dashboard"
+                        className="block px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg text-sm tracking-wider transition-colors duration-200"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        DASHBOARD
+                      </Link>
+                      <Link
+                        href="/dashboard/profile"
+                        className="block px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg text-sm tracking-wider transition-colors duration-200"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        PROFILE
+                      </Link>
+                      <Link
+                        href="/dashboard/settings"
+                        className="block px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg text-sm tracking-wider transition-colors duration-200"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        SETTINGS
+                      </Link>
+                    </div>
+                    
+                    <div className="p-2 border-t border-white/10">
+                      <SignOutButton>
+                        <button className="flex items-center space-x-2 w-full px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg text-sm tracking-wider transition-colors duration-200">
+                          <LogOut className="w-4 h-4" />
+                          <span>SIGN OUT</span>
+                        </button>
+                      </SignOutButton>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link href="/login">
+                  <motion.button
+                    className="text-white/80 hover:text-white text-sm tracking-wider transition-colors duration-300 relative group"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    LOGIN
+                    <motion.div
+                      className="absolute bottom-0 left-0 w-full h-px bg-white/50 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
+                    />
+                  </motion.button>
+                </Link>
+                
+                <Link href="/signup">
+                  <motion.button
+                    className="bg-white hover:bg-orange-500 text-black font-bold py-2 px-6 text-sm tracking-wider transition-colors duration-300 rounded-lg relative overflow-hidden"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <span className="relative z-10">SIGN UP</span>
+                    <motion.div
+                      className="absolute bottom-0 left-0 w-full h-px bg-black/20"
+                      animate={{ scaleX: [0, 1, 0] }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                    />
+                  </motion.button>
+                </Link>
+              </div>
+            )}
           </motion.div>
 
           {/* Mobile Menu Button */}

@@ -111,7 +111,7 @@ LIVEKIT_API_SECRET=your-api-secret
 
 ## API Endpoints
 
-### POST/GET `/api/token`
+### POST/GET `/api/video-call/token`
 Generates LiveKit access tokens for video calls.
 
 **Parameters:**

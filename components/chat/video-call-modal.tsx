@@ -49,7 +49,7 @@ function VideoCallModal({
       setError("");
       
       const response = await fetch(
-        `/api/token?room=${encodeURIComponent(roomName)}&username=${encodeURIComponent(userIdentity)}`
+        `/api/video-call/token?room=${encodeURIComponent(roomName)}&username=${encodeURIComponent(userIdentity)}`
       );
       
       if (!response.ok) {

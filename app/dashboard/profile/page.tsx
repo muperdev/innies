@@ -3,8 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useSyncUser } from "@/hooks/use-sync-user";
 import DashboardLayout from "@/components/dashboard-layout";
 import { 
   User, 
@@ -21,7 +20,7 @@ import {
 
 export default function ProfilePage() {
   const { user } = useUser();
-  const currentUser = useQuery(api.functions.users.getCurrentUser);
+  const { user: currentUser } = useSyncUser();
   const [isEditing, setIsEditing] = useState(false);
 
   // Sample profile data - replace with actual queries
