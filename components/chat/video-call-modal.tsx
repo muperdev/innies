@@ -1,20 +1,14 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
-import { 
-  LiveKitRoom, 
+import { useState, useEffect, useCallback } from "react";
+import {
+  LiveKitRoom,
   VideoConference,
-  RoomAudioRenderer
+  RoomAudioRenderer,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
-import { 
-  X, 
-  PhoneOff,
-  Maximize,
-  Minimize,
-  Users
-} from "lucide-react";
+import { X, PhoneOff, Maximize, Minimize, Users } from "lucide-react";
 
 interface VideoCallModalProps {
   isOpen: boolean;
@@ -24,12 +18,12 @@ interface VideoCallModalProps {
   userName: string;
 }
 
-function VideoCallModal({ 
-  isOpen, 
-  onClose, 
-  roomName, 
-  userIdentity, 
-  userName 
+function VideoCallModal({
+  isOpen,
+  onClose,
+  roomName,
+  userIdentity,
+  userName,
 }: VideoCallModalProps) {
   const [token, setToken] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
@@ -37,39 +31,41 @@ function VideoCallModal({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [connectionState, setConnectionState] = useState<string>("connecting");
 
+  const fetchToken = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const response = await fetch(
+        `/api/video-call/token?room=${encodeURIComponent(roomName)}&username=${encodeURIComponent(userIdentity)}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch token: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      setToken(data.token);
+    } catch (err) {
+      console.error("Error fetching token:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to get video call token"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [roomName, userIdentity]);
+
   useEffect(() => {
     if (isOpen && userIdentity && roomName) {
       fetchToken();
     }
-  }, [isOpen, userIdentity, roomName]);
-
-  const fetchToken = async () => {
-    try {
-      setIsLoading(true);
-      setError("");
-      
-      const response = await fetch(
-        `/api/video-call/token?room=${encodeURIComponent(roomName)}&username=${encodeURIComponent(userIdentity)}`
-      );
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch token: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      
-      setToken(data.token);
-    } catch (err) {
-      console.error("Error fetching token:", err);
-      setError(err instanceof Error ? err.message : "Failed to get video call token");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [isOpen, userIdentity, roomName, fetchToken]);
 
   const handleClose = () => {
     setToken("");
@@ -100,9 +96,9 @@ function VideoCallModal({
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           className={`relative bg-gray-900 rounded-2xl overflow-hidden shadow-2xl border border-white/20 ${
-            isFullscreen 
-              ? 'w-full h-full rounded-none' 
-              : 'w-[90vw] h-[80vh] max-w-6xl'
+            isFullscreen
+              ? "w-full h-full rounded-none"
+              : "w-[90vw] h-[80vh] max-w-6xl"
           }`}
         >
           {/* Header */}
@@ -112,10 +108,12 @@ function VideoCallModal({
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
                 <div>
                   <h3 className="text-white font-medium">{userName}</h3>
-                  <p className="text-white/60 text-sm capitalize">{connectionState}</p>
+                  <p className="text-white/60 text-sm capitalize">
+                    {connectionState}
+                  </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -123,9 +121,13 @@ function VideoCallModal({
                   onClick={toggleFullscreen}
                   className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
                 >
-                  {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+                  {isFullscreen ? (
+                    <Minimize className="w-4 h-4" />
+                  ) : (
+                    <Maximize className="w-4 h-4" />
+                  )}
                 </motion.button>
-                
+
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -149,11 +151,19 @@ function VideoCallModal({
                 >
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                     className="w-12 h-12 border-4 border-orange-400 border-t-transparent rounded-full mx-auto mb-4"
                   />
-                  <h3 className="text-white text-lg font-medium mb-2">Connecting to call...</h3>
-                  <p className="text-white/60">Setting up your video connection</p>
+                  <h3 className="text-white text-lg font-medium mb-2">
+                    Connecting to call...
+                  </h3>
+                  <p className="text-white/60">
+                    Setting up your video connection
+                  </p>
                 </motion.div>
               </div>
             )}
@@ -168,7 +178,9 @@ function VideoCallModal({
                   <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <PhoneOff className="w-8 h-8 text-red-400" />
                   </div>
-                  <h3 className="text-white text-lg font-medium mb-2">Connection Failed</h3>
+                  <h3 className="text-white text-lg font-medium mb-2">
+                    Connection Failed
+                  </h3>
                   <p className="text-white/60 mb-4">{error}</p>
                   <div className="flex gap-3 justify-center">
                     <motion.button
@@ -207,10 +219,8 @@ function VideoCallModal({
                   setError("Connection error occurred");
                 }}
               >
-                <VideoConference 
-                  chatMessageFormatter={(message, participant) => {
-                    return `${participant?.name || 'Unknown'}: ${message}`;
-                  }}
+                <VideoConference
+                  chatMessageFormatter={(message: string) => message}
                 />
                 <RoomAudioRenderer />
               </LiveKitRoom>
@@ -227,14 +237,18 @@ function VideoCallModal({
               >
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-green-400 rounded-full" />
-                  <span className="text-white text-xs font-medium px-2">LIVE</span>
+                  <span className="text-white text-xs font-medium px-2">
+                    LIVE
+                  </span>
                 </div>
-                
+
                 <div className="w-px h-6 bg-white/20" />
-                
+
                 <div className="flex items-center gap-1">
                   <Users className="w-4 h-4 text-white/60" />
-                  <span className="text-white/60 text-xs">Room: {roomName}</span>
+                  <span className="text-white/60 text-xs">
+                    Room: {roomName}
+                  </span>
                 </div>
               </motion.div>
             </div>

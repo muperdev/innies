@@ -10,14 +10,7 @@ import {
   Bell, 
   Shield, 
   CreditCard,
-  Globe,
-  Moon,
-  Sun,
-  Smartphone,
-  Mail,
   Lock,
-  Eye,
-  EyeOff,
   Save,
   Trash2
 } from "lucide-react";
@@ -56,6 +49,7 @@ export default function SettingsPage() {
     }));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handlePrivacyChange = (key: string, value: any) => {
     setPrivacy(prev => ({
       ...prev,

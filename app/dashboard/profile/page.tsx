@@ -5,17 +5,15 @@ import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useSyncUser } from "@/hooks/use-sync-user";
 import DashboardLayout from "@/components/dashboard-layout";
-import { 
-  User, 
-  Star, 
-  MapPin, 
-  Calendar, 
+import {
+  User,
+  Star,
+  MapPin,
+  Calendar,
   DollarSign,
   Edit,
   Camera,
-  Award,
-  TrendingUp,
-  Clock
+  Clock,
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -29,26 +27,26 @@ export default function ProfilePage() {
       title: "Total Bookings",
       value: "24",
       icon: Calendar,
-      color: "blue"
+      color: "blue",
     },
     {
       title: "Average Rating",
       value: "4.8",
       icon: Star,
-      color: "yellow"
+      color: "yellow",
     },
     {
       title: "Total Earned",
       value: "$12,840",
       icon: DollarSign,
-      color: "green"
+      color: "green",
     },
     {
       title: "Response Time",
       value: "< 1hr",
       icon: Clock,
-      color: "orange"
-    }
+      color: "orange",
+    },
   ];
 
   const skills = [
@@ -57,40 +55,42 @@ export default function ProfilePage() {
       category: "Creative",
       experience: "Expert",
       yearsOfExperience: 8,
-      rating: 4.9
+      rating: 4.9,
     },
     {
       name: "Photo Editing",
-      category: "Creative", 
+      category: "Creative",
       experience: "Expert",
       yearsOfExperience: 6,
-      rating: 4.8
+      rating: 4.8,
     },
     {
       name: "Videography",
       category: "Creative",
       experience: "Intermediate",
       yearsOfExperience: 3,
-      rating: 4.6
-    }
+      rating: 4.6,
+    },
   ];
 
   const recentReviews = [
     {
       id: 1,
       rating: 5,
-      comment: "Amazing photographer! Captured our wedding perfectly. Highly recommended!",
+      comment:
+        "Amazing photographer! Captured our wedding perfectly. Highly recommended!",
       client: "Sarah M.",
       date: "2024-01-15",
-      booking: "Wedding Photography"
+      booking: "Wedding Photography",
     },
     {
       id: 2,
       rating: 5,
-      comment: "Professional and creative. Delivered exactly what we needed for our brand.",
+      comment:
+        "Professional and creative. Delivered exactly what we needed for our brand.",
       client: "Marcus T.",
       date: "2024-01-10",
-      booking: "Brand Photography"
+      booking: "Brand Photography",
     },
     {
       id: 3,
@@ -98,20 +98,20 @@ export default function ProfilePage() {
       comment: "Great quality work and very responsive to feedback.",
       client: "Elena R.",
       date: "2024-01-08",
-      booking: "Product Photography"
-    }
+      booking: "Product Photography",
+    },
   ];
 
   const getExperienceColor = (experience: string) => {
     switch (experience.toLowerCase()) {
-      case 'expert':
-        return 'text-orange-400 bg-orange-400/20 border-orange-400/30';
-      case 'intermediate':
-        return 'text-blue-400 bg-blue-400/20 border-blue-400/30';
-      case 'beginner':
-        return 'text-green-400 bg-green-400/20 border-green-400/30';
+      case "expert":
+        return "text-orange-400 bg-orange-400/20 border-orange-400/30";
+      case "intermediate":
+        return "text-blue-400 bg-blue-400/20 border-blue-400/30";
+      case "beginner":
+        return "text-green-400 bg-green-400/20 border-green-400/30";
       default:
-        return 'text-white bg-white/20 border-white/30';
+        return "text-white bg-white/20 border-white/30";
     }
   };
 
@@ -147,7 +147,7 @@ export default function ProfilePage() {
               <div className="relative">
                 <div className="w-32 h-32 bg-orange-400/20 rounded-full flex items-center justify-center border-4 border-orange-400/30 relative group">
                   {user?.imageUrl ? (
-                    <img 
+                    <img
                       src={user.imageUrl}
                       alt="Profile"
                       className="w-full h-full rounded-full object-cover"
@@ -171,7 +171,9 @@ export default function ProfilePage() {
                     {user?.fullName || "Your Name"}
                   </h2>
                   <p className="text-orange-400 text-lg font-bold tracking-wide">
-                    {currentUser?.userType === "provider" ? "Skill Provider" : "Skill Seeker"}
+                    {currentUser?.userType === "provider"
+                      ? "Skill Provider"
+                      : "Skill Seeker"}
                   </p>
                   <div className="flex items-center space-x-4 mt-2">
                     <div className="flex items-center space-x-1">
@@ -185,13 +187,16 @@ export default function ProfilePage() {
                     </div>
                     <div className="flex items-center space-x-1 text-white/70">
                       <MapPin className="w-4 h-4" />
-                      <span className="text-sm tracking-wide">New York, NY</span>
+                      <span className="text-sm tracking-wide">
+                        New York, NY
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <p className="text-white/80 tracking-wide leading-relaxed">
-                  {currentUser?.bio || "Professional photographer with 8+ years of experience specializing in weddings, portraits, and commercial photography. Passionate about capturing authentic moments and creating lasting memories."}
+                  {currentUser?.bio ||
+                    "Professional photographer with 8+ years of experience specializing in weddings, portraits, and commercial photography. Passionate about capturing authentic moments and creating lasting memories."}
                 </p>
 
                 <div className="flex space-x-4">
@@ -206,7 +211,7 @@ export default function ProfilePage() {
                     <Edit className="w-4 h-4" />
                     <span>EDIT PROFILE</span>
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -310,10 +315,12 @@ export default function ProfilePage() {
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className={`
+                      <span
+                        className={`
                         text-xs font-bold tracking-wider px-2 py-1 rounded-full border
                         ${getExperienceColor(skill.experience)}
-                      `}>
+                      `}
+                      >
                         {skill.experience.toUpperCase()}
                       </span>
                       <div className="flex items-center space-x-1">
@@ -355,9 +362,9 @@ export default function ProfilePage() {
                         <Star
                           key={i}
                           className={`w-4 h-4 ${
-                            i < review.rating 
-                              ? 'text-orange-400 fill-orange-400' 
-                              : 'text-white/30'
+                            i < review.rating
+                              ? "text-orange-400 fill-orange-400"
+                              : "text-white/30"
                           }`}
                         />
                       ))}
@@ -366,13 +373,15 @@ export default function ProfilePage() {
                       {new Date(review.date).toLocaleDateString()}
                     </span>
                   </div>
-                  
+
                   <p className="text-white/80 text-sm tracking-wide leading-relaxed mb-2">
-                    "{review.comment}"
+                    &quot;{review.comment}&quot;
                   </p>
-                  
+
                   <div className="text-white/60 text-xs tracking-wide">
-                    <span className="text-orange-400 font-bold">{review.client}</span>
+                    <span className="text-orange-400 font-bold">
+                      {review.client}
+                    </span>
                     {" • "}
                     {review.booking}
                   </div>
@@ -384,9 +393,11 @@ export default function ProfilePage() {
               whileHover={{ scale: 1.02 }}
               className="mt-6 text-center"
             >
-              <button className="w-full py-2 text-orange-400 text-sm font-bold tracking-wider 
+              <button
+                className="w-full py-2 text-orange-400 text-sm font-bold tracking-wider 
                                border border-orange-400/50 rounded-lg hover:bg-orange-400/10 
-                               transition-colors duration-200">
+                               transition-colors duration-200"
+              >
                 VIEW ALL REVIEWS
               </button>
             </motion.div>

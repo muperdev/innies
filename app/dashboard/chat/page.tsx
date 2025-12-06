@@ -1,40 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import DashboardLayout from "@/components/dashboard-layout";
 import ChatInterface from "@/components/chat/chat-interface";
 import VideoCallModal from "@/components/chat/video-call-modal";
-import { 
-  MessageCircle, 
-  Video, 
-  Phone,
-  Users,
-  Search,
-  Plus
-} from "lucide-react";
-import { Id } from "@/convex/_generated/dataModel";
-
-type Chat = {
-  _id: Id<"chats">;
-  title?: string;
-  participants: Id<"users">[];
-  createdAt: number;
-  updatedAt: number;
-  lastMessageId?: Id<"messages">;
-  isActive: boolean;
-};
-
-type User = {
-  _id: Id<"users">;
-  name: string;
-  email: string;
-  clerkId: string;
-  imageUrl?: string;
-};
+import { MessageCircle, Video, Phone, Search, Plus } from "lucide-react";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 export default function ChatPage() {
   const { user } = useUser();
@@ -44,20 +19,22 @@ export default function ChatPage() {
   const [currentRoomName, setCurrentRoomName] = useState<string>("");
 
   // Get current user from Convex
-  const currentUser = useQuery(api.users.getUserByClerkId, 
+  const currentUser = useQuery(
+    api.functions.users.getUserByClerkId,
     user?.id ? { clerkId: user.id } : "skip"
   );
 
   // Get user's chats
-  const userChats = useQuery(api.chats.getUserChats, 
+  const userChats = useQuery(
+    api.functions.chats.getUserChats,
     currentUser?._id ? { userId: currentUser._id } : "skip"
-  ) as Chat[] | undefined;
+  );
 
   // Get all users for creating new chats
-  const allUsers = useQuery(api.users.getAllUsers) as User[] | undefined;
+  const allUsers = useQuery(api.functions.users.getAllUsers);
 
   // Create new chat mutation
-  const createChat = useMutation(api.chats.createChat);
+  const createChat = useMutation(api.functions.chats.createChat);
 
   const handleStartVideoCall = () => {
     if (selectedChat) {
@@ -68,10 +45,10 @@ export default function ChatPage() {
 
   const handleCreateNewChat = async (otherUserId: Id<"users">) => {
     if (!currentUser) return;
-    
+
     try {
       const chatId = await createChat({
-        participants: [currentUser._id, otherUserId]
+        participants: [currentUser._id, otherUserId],
       });
       setSelectedChat(chatId);
     } catch (error) {
@@ -79,15 +56,18 @@ export default function ChatPage() {
     }
   };
 
-  const filteredUsers = allUsers?.filter(u => 
-    u._id !== currentUser?._id && 
-    u.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = allUsers?.filter(
+    (u: Doc<"users">) =>
+      u._id !== currentUser?._id &&
+      u.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getOtherParticipant = (chat: Chat): User | undefined => {
+  const getOtherParticipant = (chat: Doc<"chats">): Doc<"users"> | undefined => {
     if (!allUsers || !currentUser) return undefined;
-    const otherParticipantId = chat.participants.find(id => id !== currentUser._id);
-    return allUsers.find(user => user._id === otherParticipantId);
+    const otherParticipantId = chat.participants.find(
+      (id) => id !== currentUser._id
+    );
+    return allUsers.find((user) => user._id === otherParticipantId);
   };
 
   return (
@@ -97,7 +77,7 @@ export default function ChatPage() {
           {/* Chat List Sidebar */}
           <div className="w-1/3 border-r border-white/20 bg-gray-900/50">
             <div className="p-6 border-b border-white/20">
-              <motion.h2 
+              <motion.h2
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-2xl font-bold text-white mb-4 flex items-center gap-2"
@@ -105,7 +85,7 @@ export default function ChatPage() {
                 <MessageCircle className="w-6 h-6 text-orange-400" />
                 CHATS
               </motion.h2>
-              
+
               {/* Search */}
               <div className="relative mb-4">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/50" />
@@ -121,7 +101,7 @@ export default function ChatPage() {
 
             {/* Chat List */}
             <div className="flex-1 overflow-y-auto">
-              {userChats?.map((chat) => {
+              {userChats?.map((chat: Doc<"chats">) => {
                 const otherUser = getOtherParticipant(chat);
                 return (
                   <motion.div
@@ -131,9 +111,9 @@ export default function ChatPage() {
                     whileHover={{ x: 5 }}
                     onClick={() => setSelectedChat(chat._id)}
                     className={`p-4 border-b border-white/10 cursor-pointer transition-colors ${
-                      selectedChat === chat._id 
-                        ? 'bg-orange-400/20 border-l-4 border-l-orange-400' 
-                        : 'hover:bg-white/5'
+                      selectedChat === chat._id
+                        ? "bg-orange-400/20 border-l-4 border-l-orange-400"
+                        : "hover:bg-white/5"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -141,9 +121,11 @@ export default function ChatPage() {
                         {otherUser?.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-white font-medium">{otherUser?.name || 'Unknown User'}</h3>
+                        <h3 className="text-white font-medium">
+                          {otherUser?.name || "Unknown User"}
+                        </h3>
                         <p className="text-white/60 text-sm truncate">
-                          {chat.title || 'No messages yet'}
+                          {chat.title || "No messages yet"}
                         </p>
                       </div>
                       <div className="flex flex-col items-end gap-1">
@@ -159,8 +141,10 @@ export default function ChatPage() {
               {/* New Chat Options */}
               {searchQuery && filteredUsers && filteredUsers.length > 0 && (
                 <div className="p-4">
-                  <h3 className="text-white/60 text-sm font-medium mb-2">START NEW CHAT</h3>
-                  {filteredUsers.map((user) => (
+                  <h3 className="text-white/60 text-sm font-medium mb-2">
+                    START NEW CHAT
+                  </h3>
+                  {filteredUsers.map((user: Doc<"users">) => (
                     <motion.div
                       key={user._id}
                       initial={{ opacity: 0, y: 10 }}
@@ -174,7 +158,9 @@ export default function ChatPage() {
                           {user.name.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <h4 className="text-white font-medium text-sm">{user.name}</h4>
+                          <h4 className="text-white font-medium text-sm">
+                            {user.name}
+                          </h4>
                           <p className="text-white/60 text-xs">{user.email}</p>
                         </div>
                         <Plus className="w-4 h-4 text-orange-400 ml-auto" />
@@ -195,22 +181,28 @@ export default function ChatPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       {(() => {
-                        const chat = userChats?.find(c => c._id === selectedChat);
-                        const otherUser = chat ? getOtherParticipant(chat) : undefined;
+                        const chat = userChats?.find(
+                          (c: Doc<"chats">) => c._id === selectedChat
+                        );
+                        const otherUser = chat
+                          ? getOtherParticipant(chat)
+                          : undefined;
                         return (
                           <>
                             <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-white font-bold">
                               {otherUser?.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <h3 className="text-white font-medium">{otherUser?.name || 'Unknown User'}</h3>
+                              <h3 className="text-white font-medium">
+                                {otherUser?.name || "Unknown User"}
+                              </h3>
                               <p className="text-white/60 text-sm">Online</p>
                             </div>
                           </>
                         );
                       })()}
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
                       <motion.button
                         whileHover={{ scale: 1.05 }}
@@ -232,7 +224,10 @@ export default function ChatPage() {
                 </div>
 
                 {/* Chat Messages */}
-                <ChatInterface chatId={selectedChat} currentUserId={currentUser?._id} />
+                <ChatInterface
+                  chatId={selectedChat}
+                  currentUserId={currentUser?._id}
+                />
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center">
@@ -242,8 +237,13 @@ export default function ChatPage() {
                   className="text-center"
                 >
                   <MessageCircle className="w-16 h-16 text-white/30 mx-auto mb-4" />
-                  <h3 className="text-xl text-white/60 mb-2">Select a chat to start messaging</h3>
-                  <p className="text-white/40">Choose a conversation from the sidebar or search for users to start a new chat</p>
+                  <h3 className="text-xl text-white/60 mb-2">
+                    Select a chat to start messaging
+                  </h3>
+                  <p className="text-white/40">
+                    Choose a conversation from the sidebar or search for users
+                    to start a new chat
+                  </p>
                 </motion.div>
               </div>
             )}

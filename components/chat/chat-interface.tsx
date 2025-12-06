@@ -5,25 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Send, Paperclip, Smile } from "lucide-react";
-import { Id } from "@/convex/_generated/dataModel";
-
-type Message = {
-  _id: Id<"messages">;
-  chatId: Id<"chats">;
-  senderId: Id<"users">;
-  content: string;
-  timestamp: number;
-  isRead: boolean;
-  attachments?: string[];
-};
-
-type User = {
-  _id: Id<"users">;
-  name: string;
-  email: string;
-  clerkId: string;
-  imageUrl?: string;
-};
+import { Doc, Id } from "@/convex/_generated/dataModel";
 
 interface ChatInterfaceProps {
   chatId: Id<"chats">;
@@ -36,13 +18,13 @@ export default function ChatInterface({ chatId, currentUserId }: ChatInterfacePr
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Get messages for this chat
-  const messages = useQuery(api.messages.getChatMessages, { chatId }) as Message[] | undefined;
+  const messages = useQuery(api.functions.messages.getChatMessages, { chatId });
   
   // Get all users to display sender names
-  const allUsers = useQuery(api.users.getAllUsers) as User[] | undefined;
+  const allUsers = useQuery(api.functions.users.getAllUsers);
   
   // Send message mutation
-  const sendMessage = useMutation(api.messages.sendMessage);
+  const sendMessage = useMutation(api.functions.messages.sendMessage);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -68,8 +50,8 @@ export default function ChatInterface({ chatId, currentUserId }: ChatInterfacePr
     }
   };
 
-  const getUserById = (userId: Id<"users">): User | undefined => {
-    return allUsers?.find(user => user._id === userId);
+  const getUserById = (userId: Id<"users">): Doc<"users"> | undefined => {
+    return allUsers?.find((user: Doc<"users">) => user._id === userId);
   };
 
   const formatTime = (timestamp: number) => {
@@ -94,8 +76,8 @@ export default function ChatInterface({ chatId, currentUserId }: ChatInterfacePr
     }
   };
 
-  const groupMessagesByDate = (messages: Message[]) => {
-    const groups: { [key: string]: Message[] } = {};
+  const groupMessagesByDate = (messages: Doc<"messages">[]) => {
+    const groups: { [key: string]: Doc<"messages">[] } = {};
     
     messages?.forEach(message => {
       const dateKey = new Date(message.timestamp).toDateString();

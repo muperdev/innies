@@ -20,7 +20,7 @@ export const getCurrentUser = query({
       .query("users")
       .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
       .unique();
-    
+
     return user;
   },
 });
@@ -33,13 +33,17 @@ export const getProviders = query({
     location: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("users")
+    const query = ctx.db
+      .query("users")
       .withIndex("by_user_type", (q) => q.eq("userType", "provider"));
-    
+
     const providers = await query.collect();
-    
-    return providers.filter(provider => {
-      if (args.isAvailable !== undefined && provider.isAvailable !== args.isAvailable) {
+
+    return providers.filter((provider) => {
+      if (
+        args.isAvailable !== undefined &&
+        provider.isAvailable !== args.isAvailable
+      ) {
         return false;
       }
       if (args.location && provider.location !== args.location) {
@@ -97,7 +101,7 @@ export const createOrUpdateUser = mutation({
       .query("users")
       .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
       .unique();
-    
+
     if (existingUser) {
       // Update existing user
       await ctx.db.patch(existingUser._id, {
@@ -109,7 +113,7 @@ export const createOrUpdateUser = mutation({
       });
       return existingUser._id;
     }
-    
+
     // Create new user
     const userId = await ctx.db.insert("users", {
       clerkId: args.clerkId,
@@ -130,11 +134,15 @@ export const updateUserProfile = mutation({
     userType: v.optional(v.union(v.literal("seeker"), v.literal("provider"))),
     bio: v.optional(v.string()),
     hourlyRate: v.optional(v.number()),
-    availability: v.optional(v.array(v.object({
-      dayOfWeek: v.number(),
-      startTime: v.string(),
-      endTime: v.string(),
-    }))),
+    availability: v.optional(
+      v.array(
+        v.object({
+          dayOfWeek: v.number(),
+          startTime: v.string(),
+          endTime: v.string(),
+        })
+      )
+    ),
     portfolioUrls: v.optional(v.array(v.string())),
     location: v.optional(v.string()),
     isAvailable: v.optional(v.boolean()),
@@ -147,25 +155,30 @@ export const updateUserProfile = mutation({
       .query("users")
       .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
       .unique();
-    
+
     if (!user) throw new Error("User not found");
-    
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {
       userType: args.userType || user.userType,
       bio: args.bio || user.bio,
     };
-    
+
     // Only update provider-specific fields if user is a provider
     if (args.userType === "provider" || user.userType === "provider") {
-      if (args.hourlyRate !== undefined) updateData.hourlyRate = args.hourlyRate;
-      if (args.availability !== undefined) updateData.availability = args.availability;
-      if (args.portfolioUrls !== undefined) updateData.portfolioUrls = args.portfolioUrls;
+      if (args.hourlyRate !== undefined)
+        updateData.hourlyRate = args.hourlyRate;
+      if (args.availability !== undefined)
+        updateData.availability = args.availability;
+      if (args.portfolioUrls !== undefined)
+        updateData.portfolioUrls = args.portfolioUrls;
       if (args.location !== undefined) updateData.location = args.location;
-      if (args.isAvailable !== undefined) updateData.isAvailable = args.isAvailable;
+      if (args.isAvailable !== undefined)
+        updateData.isAvailable = args.isAvailable;
     }
-    
+
     await ctx.db.patch(user._id, updateData);
-    
+
     return user._id;
   },
 });

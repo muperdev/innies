@@ -13,7 +13,7 @@ import {
   TrendingUp,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -27,29 +27,29 @@ export default function DashboardPage() {
       value: "12",
       change: "+3 this month",
       icon: Calendar,
-      color: "orange"
+      color: "orange",
     },
     {
       title: "Total Earnings",
       value: "$2,840",
       change: "+12% this month",
       icon: DollarSign,
-      color: "green"
+      color: "green",
     },
     {
       title: "Average Rating",
       value: "4.8",
       change: "98% positive",
       icon: Star,
-      color: "yellow"
+      color: "yellow",
     },
     {
       title: "Active Skills",
       value: "3",
       change: "Photography, Design",
       icon: Users,
-      color: "blue"
-    }
+      color: "blue",
+    },
   ];
 
   const recentActivity = [
@@ -58,29 +58,29 @@ export default function DashboardPage() {
       type: "booking",
       title: "Photography session completed",
       time: "2 hours ago",
-      status: "completed"
+      status: "completed",
     },
     {
       id: 2,
       type: "payment",
       title: "Payment received - $120",
       time: "1 day ago",
-      status: "success"
+      status: "success",
     },
     {
       id: 3,
       type: "review",
       title: "New 5-star review received",
       time: "2 days ago",
-      status: "positive"
+      status: "positive",
     },
     {
       id: 4,
       type: "booking",
       title: "New booking request",
       time: "3 days ago",
-      status: "pending"
-    }
+      status: "pending",
+    },
   ];
 
   return (
@@ -98,7 +98,8 @@ export default function DashboardPage() {
           </h1>
           <div className="w-20 h-1 bg-gradient-to-r from-orange-400 to-white/50"></div>
           <p className="text-white/70 tracking-wider">
-            Welcome back, {user.firstName || "User"}! Here's your overview.
+            Welcome back, {user?.firstName || "User"}! Here&apos;s your
+            overview.
           </p>
         </motion.div>
 
@@ -171,19 +172,25 @@ export default function DashboardPage() {
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-white/70 text-sm tracking-wide">Name</span>
+                    <span className="text-white/70 text-sm tracking-wide">
+                      Name
+                    </span>
                     <span className="text-white font-bold tracking-wider">
-                      {user.fullName || "Not set"}
+                      {user?.fullName || "Not set"}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-white/70 text-sm tracking-wide">Email</span>
+                    <span className="text-white/70 text-sm tracking-wide">
+                      Email
+                    </span>
                     <span className="text-white font-bold tracking-wider text-xs">
-                      {user.primaryEmailAddress?.emailAddress}
+                      {user?.primaryEmailAddress?.emailAddress}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-white/70 text-sm tracking-wide">Status</span>
+                    <span className="text-white/70 text-sm tracking-wide">
+                      Status
+                    </span>
                     <span className="text-orange-400 font-bold tracking-wider text-sm">
                       ● ACTIVE
                     </span>
@@ -198,19 +205,25 @@ export default function DashboardPage() {
                 {currentUser ? (
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-white/70 text-sm tracking-wide">User Type</span>
+                      <span className="text-white/70 text-sm tracking-wide">
+                        User Type
+                      </span>
                       <span className="text-orange-400 font-bold tracking-wider uppercase">
                         {currentUser.userType}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-white/70 text-sm tracking-wide">Member Since</span>
+                      <span className="text-white/70 text-sm tracking-wide">
+                        Member Since
+                      </span>
                       <span className="text-white font-bold tracking-wider text-sm">
                         {new Date(currentUser.createdAt).toLocaleDateString()}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-white/70 text-sm tracking-wide">Rating</span>
+                      <span className="text-white/70 text-sm tracking-wide">
+                        Rating
+                      </span>
                       <div className="flex items-center space-x-1">
                         <Star className="w-4 h-4 text-orange-400 fill-orange-400" />
                         <span className="text-white font-bold tracking-wider">
@@ -248,12 +261,20 @@ export default function DashboardPage() {
                   transition={{ duration: 0.3, delay: 0.1 * index }}
                   className="flex items-start space-x-3 p-3 rounded-lg bg-black/30 border border-white/10"
                 >
-                  <div className={`
+                  <div
+                    className={`
                     w-2 h-2 rounded-full mt-2 flex-shrink-0
-                    ${activity.status === 'completed' ? 'bg-green-400' :
-                      activity.status === 'success' ? 'bg-orange-400' :
-                        activity.status === 'positive' ? 'bg-yellow-400' : 'bg-blue-400'}
-                  `} />
+                    ${
+                      activity.status === "completed"
+                        ? "bg-green-400"
+                        : activity.status === "success"
+                          ? "bg-orange-400"
+                          : activity.status === "positive"
+                            ? "bg-yellow-400"
+                            : "bg-blue-400"
+                    }
+                  `}
+                  />
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-sm font-bold tracking-wide truncate">
                       {activity.title}
@@ -270,9 +291,11 @@ export default function DashboardPage() {
               whileHover={{ scale: 1.02 }}
               className="mt-6 text-center"
             >
-              <button className="w-full py-2 text-orange-400 text-sm font-bold tracking-wider 
+              <button
+                className="w-full py-2 text-orange-400 text-sm font-bold tracking-wider 
                                border border-orange-400/50 rounded-lg hover:bg-orange-400/10 
-                               transition-colors duration-200">
+                               transition-colors duration-200"
+              >
                 VIEW ALL ACTIVITY
               </button>
             </motion.div>
